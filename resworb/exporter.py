@@ -3,14 +3,14 @@
 import abc
 import json
 import pickle
-from typing import Any, Dict, List, Mapping, Optional
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
 
 import pytoml
 import yaml
 
 
 class ExportMixin(object):
-    def export(self, kind: str = "all") -> Dict[str, List]:
+    def export(self, kinds: Union[str, Iterable[str]] = "all") -> Dict[str, List]:
         factory = {
             "opened_tabs": self.get_opened_tabs,
             "cloud_tabs": self.get_cloud_tabs,
@@ -18,8 +18,8 @@ class ExportMixin(object):
             "bookmarks": self.get_bookmarks,
             "histories": self.get_histories,
         }
-        if kind != "all":
-            factory = {kind: factory[kind]}
+        if kinds != "all":
+            factory = {kind: factory[kind] for kind in kinds}
 
         return {k: list(v()) for k, v in factory.items()}
 
