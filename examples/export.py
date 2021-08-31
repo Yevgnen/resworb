@@ -4,8 +4,8 @@ from resworb.browsers.safari import Safari
 
 safari = Safari()
 
-print(safari.export(kind="cloud_tabs"))
-print(safari.export(kind="readings"))
-print(safari.export(kind="bookmarks"))
-print(safari.export(kind="histories"))
-print(safari.export(kind="all"))
+print(safari.export(kinds=["cloud_tabs"]))
+print(safari.export(kinds=["readings"]))
+print(safari.export(kinds=["bookmarks"]))
+print(safari.export(kinds=["histories"]))
+print(safari.export(kinds="all"))
