@@ -21,7 +21,7 @@ class ExportMixin(object):
         if kinds == "all":
             return {k: list(v()) for k, v in factory.items()}
 
-        elif isinstance(kinds, str):
+        if isinstance(kinds, str):
             kinds = [kinds]
 
         return {kind: factory[kind] for kind in kinds}
