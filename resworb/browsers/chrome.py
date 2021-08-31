@@ -2,7 +2,9 @@
 
 import json
 import os
+import re
 import sqlite3
+import sys
 from typing import Dict, Iterable, Union
 
 from resworb.base import (
@@ -69,9 +71,20 @@ class ChromeHistories(HistoryMixin):
                 }
 
 
-DEFAULT_LIBRARY_PATH = os.path.join(
-    os.environ["HOME"], "Library", "Application Support", "Google", "Chrome", "Default"
-)
+def get_default_library_path() -> str:
+    platform = sys.platform
+
+    if re.match("win.*", platform):
+        return os.path.join(
+            os.path.expanduser("~"), "AppData", "Local", "Google", "Chrome", "User Data", "Default"
+        )
+
+    elif re.match("darwin", platform):
+        return os.path.join(
+            os.environ["HOME"], "Library", "Application Support", "Google", "Chrome", "Default"
+        )
+    else:
+        raise RuntimeError(f"Unsupported platform: {platform}")
 
 
 class Chrome(
@@ -82,7 +95,7 @@ class Chrome(
     ChromeBookmarks,
     ChromeHistories,
 ):
-    def __init__(self, library: str = DEFAULT_LIBRARY_PATH):
+    def __init__(self, library: str = get_default_library_path()):
         super().__init__()
 
         self.library = library
