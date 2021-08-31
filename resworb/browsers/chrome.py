@@ -84,7 +84,7 @@ def get_default_library_path() -> str:
             os.environ["HOME"], "Library", "Application Support", "Google", "Chrome", "Default"
         )
     else:
-        raise RuntimeError(f"not supported platform: {platform}")
+        raise RuntimeError(f"Unsupported platform: {platform}")
 
 
 class Chrome(
