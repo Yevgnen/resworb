@@ -24,7 +24,7 @@ class ExportMixin(object):
         if isinstance(kinds, str):
             kinds = [kinds]
 
-        return {kind: factory[kind] for kind in kinds}
+        return {kind: list(factory[kind]()) for kind in kinds}
 
 
 class Exporter(object, metaclass=abc.ABCMeta):
