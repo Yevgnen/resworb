@@ -18,10 +18,13 @@ class ExportMixin(object):
             "bookmarks": self.get_bookmarks,
             "histories": self.get_histories,
         }
-        if kinds != "all":
-            factory = {kind: factory[kind] for kind in kinds}
+        if kinds == "all":
+            return {k: list(v()) for k, v in factory.items()}
 
-        return {k: list(v()) for k, v in factory.items()}
+        if isinstance(kinds, str):
+            kinds = [kinds]
+
+        return {kind: list(factory[kind]()) for kind in kinds}
 
 
 class Exporter(object, metaclass=abc.ABCMeta):
