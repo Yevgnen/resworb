@@ -71,11 +71,13 @@ class SafariOpenedTabs(OpenedTabMixin):
         subprocess.run(["osascript", "-e", script], check=True)
 
         with open(temp, mode="r") as f:
+            processed = set()
             for line in f:
                 url, title = line.split("\t")
 
                 # Ignore start pages
-                if not re.match(r"favorites://", url):
+                if not re.match(r"favorites://", url) and url not in processed:
+                    processed.add(url)
                     yield {
                         "title": title.rstrip(),
                         "url": url,
