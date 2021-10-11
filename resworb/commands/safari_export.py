@@ -28,7 +28,7 @@ def add_arguments(parser):
         nargs="+",
         choices=sources,
         default=None,
-        help=f"Resource types: {sources}\nIf not given, export all sources.",
+        help="If not given, export all sources.",
     )
     parser.add_argument(
         "-t",
