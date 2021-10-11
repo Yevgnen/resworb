@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 setup(
     name="resworb",
     description="Manage browser data in Python.",
-    version="0.1.0",
+    version="0.2.1",
     url="https://github.com/Yevgnen/resworb",
     author="Yevgnen Koh",
     author_email="wherejoystarts@gmail.com",
