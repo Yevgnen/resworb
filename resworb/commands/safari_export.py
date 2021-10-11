@@ -13,15 +13,22 @@ logger = logging.getLogger(__name__)
 
 
 def add_arguments(parser):
+    sources = [
+        "opened_tabs",
+        "cloud_tabs",
+        "readings",
+        "bookmarks",
+        "histories",
+    ]
+
     parser.add_argument(
         "-s",
         "--source",
         type=str,
-        default="all",
-        help=(
-            "Resource types ('opened_tabs', 'cloud_tabs', 'readings', 'bookmarks', 'all') "
-            "(default: 'all')"
-        ),
+        nargs="+",
+        choices=sources,
+        default=None,
+        help=f"Resource types: {sources}\nIf not given, export all sources.",
     )
     parser.add_argument(
         "-t",
@@ -46,7 +53,11 @@ def parse_args():
     # pylint: disable=redefined-outer-name
     parser = argparse.ArgumentParser()
     parser = add_arguments(parser)
+
     args = parser.parse_args()
+
+    if not args.source:
+        args.source = "all"
 
     return args
 
