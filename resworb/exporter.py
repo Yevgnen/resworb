@@ -30,8 +30,19 @@ class ExportMixin(object):
     def export(
         self, kinds: Union[str, Iterable[str]] = "all", drop_duplicates: bool = True
     ) -> Dict[str, List]:
-        def _wrapper(f):
+        def _wrapper(name, f):
             if drop_duplicates:
+                if name == "cloud_tabs":
+                    return [
+                        {
+                            key: list(self._deduplicate(value))
+                            if key == "tabs"
+                            else value
+                            for key, value in result.items()
+                        }
+                        for result in f()
+                    ]
+
                 return self._deduplicate(f())
 
             return f()
@@ -44,12 +55,12 @@ class ExportMixin(object):
             "histories": self.get_histories,
         }
         if kinds == "all":
-            return {k: list(_wrapper(v)) for k, v in factory.items()}
+            return {k: list(_wrapper(k, v)) for k, v in factory.items()}
 
         if isinstance(kinds, str):
             kinds = [kinds]
 
-        return {kind: list(_wrapper(factory[kind])) for kind in kinds}
+        return {kind: list(_wrapper(kind, factory[kind])) for kind in kinds}
 
 
 class Exporter(object, metaclass=abc.ABCMeta):
