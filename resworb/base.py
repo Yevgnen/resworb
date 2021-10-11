@@ -11,6 +11,8 @@ class OpenedTabMixin(object):
 
 
 class CloudTabMixin(object):
+    cloud_tab_file: str
+
     def get_cloud_tabs(self) -> Iterable[URLItem]:
         raise NotImplementedError()
 
@@ -21,10 +23,14 @@ class ReadingMixin(object):
 
 
 class BookmarkMixin(object):
+    bookmark_file: str
+
     def get_bookmarks(self, flatten: bool = True) -> Union[Iterable[URLItem], Dict]:
         raise NotImplementedError()
 
 
 class HistoryMixin(object):
+    history_file: str
+
     def get_histories(self) -> Iterable[Dict]:
         raise NotImplementedError()

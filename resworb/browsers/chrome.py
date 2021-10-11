@@ -47,11 +47,11 @@ class ChromeBookmarks(BookmarkMixin):
                     "folders": folders,
                 }
 
-        with open(self.bookmark_file, mode="r") as f:
+        with open(self.bookmark_file, mode="r", encoding="utf-8") as f:
             data = json.load(f)
 
         roots = data.get("roots", {})
-        for root_key, root_value in roots.items():
+        for root_value in roots.values():
             yield from _get_bookmarks(root_value, [root_value["name"]])
 
 
@@ -74,17 +74,28 @@ class ChromeHistories(HistoryMixin):
 def get_default_library_path() -> str:
     platform = sys.platform
 
-    if re.match("win.*", platform):
+    if re.match(r"win.*", platform):
         return os.path.join(
-            os.path.expanduser("~"), "AppData", "Local", "Google", "Chrome", "User Data", "Default"
+            os.path.expanduser("~"),
+            "AppData",
+            "Local",
+            "Google",
+            "Chrome",
+            "User Data",
+            "Default",
         )
 
-    elif re.match("darwin", platform):
+    if re.match("darwin", platform):
         return os.path.join(
-            os.environ["HOME"], "Library", "Application Support", "Google", "Chrome", "Default"
+            os.environ["HOME"],
+            "Library",
+            "Application Support",
+            "Google",
+            "Chrome",
+            "Default",
         )
-    else:
-        raise RuntimeError(f"Unsupported platform: {platform}")
+
+    raise RuntimeError(f"Unsupported platform: {platform}")
 
 
 class Chrome(
@@ -94,7 +105,7 @@ class Chrome(
     ChromeReadings,
     ChromeBookmarks,
     ChromeHistories,
-):
+):  # pylint: disable=too-many-ancestors
     def __init__(self, library: str = get_default_library_path()):
         super().__init__()
 

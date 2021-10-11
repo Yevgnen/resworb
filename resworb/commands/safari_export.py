@@ -51,7 +51,7 @@ def parse_args():
     return args
 
 
-def export(source: str, target: str, library: str) -> None:
+def export(sources: str, target: str, library: str) -> None:
     export_factory = {
         ".yml": YAMLExporter,
         ".yaml": YAMLExporter,
@@ -64,9 +64,9 @@ def export(source: str, target: str, library: str) -> None:
     exporter_class = export_factory.get(file_type)
     if exporter_class is None:
         raise ValueError(f"Unsupported file type: {file_type}")
-    exporter = exporter_class()
+    exporter = exporter_class()  # type: ignore
 
-    records = Safari(library=library).export(source)
+    records = Safari(library=library).export(sources)
 
     exporter.export_to_file(records, target)
 

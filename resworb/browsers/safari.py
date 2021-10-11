@@ -6,7 +6,7 @@ import re
 import sqlite3
 import subprocess
 import tempfile
-from typing import Dict, Iterable, Union
+from typing import Any, Dict, Iterable, Mapping, Union
 
 from resworb.base import (
     BookmarkMixin,
@@ -70,7 +70,7 @@ class SafariOpenedTabs(OpenedTabMixin):
         """
         subprocess.run(["osascript", "-e", script], check=True)
 
-        with open(temp, mode="r") as f:
+        with open(temp, mode="r", encoding="utf-8") as f:
             for line in f:
                 url, title = line.split("\t")
 
@@ -102,12 +102,14 @@ class SafariCloudTabs(CloudTabMixin):
                     "url": tab[1],
                 }
 
-    def get_cloud_tabs(self) -> Iterable[URLItem]:
+    def get_cloud_tabs(self) -> Iterable[Dict[str, Any]]:
         for device in self.get_devices():
             yield {**device, "tabs": list(self.get_device_cloud_tabs(device["id"]))}
 
 
 class SafariReadings(ReadingMixin):
+    bookmark_plist: Mapping
+
     def get_readings(self) -> Iterable[URLItem]:
 
         bookmarks = None
@@ -127,6 +129,8 @@ class SafariReadings(ReadingMixin):
 
 
 class SafariBookmarks(BookmarkMixin):
+    bookmark_plist: Mapping
+
     def get_bookmarks(self, flatten: bool = True) -> Union[Iterable[URLItem], Dict]:
         def _get_bookmarks(node):
             if isinstance(node, list):
@@ -215,7 +219,7 @@ class Safari(
     SafariReadings,
     SafariBookmarks,
     SafariHistories,
-):
+):  # pylint: disable=too-many-ancestors
     def __init__(self, library: str = DEFAULT_LIBRARY_PATH):
         super().__init__()
 

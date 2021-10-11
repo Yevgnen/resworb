@@ -20,6 +20,8 @@ from resworb.exporter import ExportMixin
 
 
 class FirefoxOpenedTabs(OpenedTabMixin):
+    session_file: str
+
     def get_opened_tabs(self) -> Iterable[URLItem]:
         # References:
         # https://gist.github.com/tmonjalo/33c4402b0d35f1233020bf427b5539fa
@@ -27,10 +29,10 @@ class FirefoxOpenedTabs(OpenedTabMixin):
         import lz4.block
 
         with open(self.session_file, mode="rb") as f:
-            bytes = f.read()
-            if bytes[:8] == b"mozLz40\0":
-                bytes = lz4.block.decompress(bytes[8:])
-                data = json.loads(bytes)
+            bytes_ = f.read()
+            if bytes_[:8] == b"mozLz40\0":
+                bytes_ = lz4.block.decompress(bytes_[8:])
+                data = json.loads(bytes_)
 
                 for window in data["windows"]:
                     for tab in window["tabs"]:
@@ -52,6 +54,8 @@ class FirefoxReadings(ReadingMixin):
 
 
 class FirefoxBookmarks(BookmarkMixin):
+    history_file: str
+
     def _get_bookmarks_folders(self):
         with sqlite3.connect(self.history_file) as conn:
             sql = """
@@ -85,7 +89,7 @@ class FirefoxBookmarks(BookmarkMixin):
             ORDER BY dateAdded desc;
             """
 
-            for type, parent, title, url in conn.cursor().execute(sql):
+            for _, parent, title, url in conn.cursor().execute(sql):
                 yield {
                     "title": title,
                     "url": url,
@@ -115,7 +119,12 @@ def get_default_library_path() -> str:
     platform = sys.platform
     if re.match("win.*", platform):
         return os.path.join(
-            os.path.expanduser("~"), "AppData", "Roaming", "Mozilla", "Firefox", "Profiles"
+            os.path.expanduser("~"),
+            "AppData",
+            "Roaming",
+            "Mozilla",
+            "Firefox",
+            "Profiles",
         )
 
     if re.match("darwin", platform):
@@ -133,7 +142,7 @@ class Firefox(
     FirefoxReadings,
     FirefoxBookmarks,
     FirefoxHistories,
-):
+):  # pylint: disable=too-many-ancestors
     def __init__(self, library: str = get_default_library_path()):
         super().__init__()
 

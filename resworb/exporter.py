@@ -3,7 +3,7 @@
 import abc
 import json
 import pickle
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Union
+from typing import Any, Callable, Dict, Iterable, List, Mapping, Optional, Union
 
 import pytoml
 import yaml
@@ -12,7 +12,15 @@ from resworb.base import URLItem
 
 
 class ExportMixin(object):
+    get_opened_tabs: Callable
+    get_cloud_tabs: Callable
+    get_readings: Callable
+    get_bookmarks: Callable
+    get_histories: Callable
+
     def _deduplicate(self, items: Iterable[URLItem]) -> Iterable[URLItem]:
+        # pylint: disable=no-self-use
+
         processed = set()
         for x in items:
             if x["url"] not in processed:
@@ -65,7 +73,10 @@ class YAMLExporter(Exporter):
         dump_kwargs: Optional[Mapping] = None,
     ) -> None:
         if not file_kwargs:
-            file_kwargs = {"mode": "w"}
+            file_kwargs = {
+                "mode": "w",
+                "encoding": "utf-8",
+            }
 
         if not dump_kwargs:
             dump_kwargs = {
@@ -74,7 +85,7 @@ class YAMLExporter(Exporter):
                 "indent": 2,
             }
 
-        with open(filename, **file_kwargs) as f:
+        with open(filename, **file_kwargs) as f:  # pylint: disable=unspecified-encoding
             yaml.safe_dump(data, f, **dump_kwargs)
 
 
@@ -87,12 +98,15 @@ class TOMLExporter(Exporter):
         dump_kwargs: Optional[Mapping] = None,
     ) -> None:
         if not file_kwargs:
-            file_kwargs = {"mode": "w"}
+            file_kwargs = {
+                "mode": "w",
+                "encoding": "utf-8",
+            }
 
         if not dump_kwargs:
             dump_kwargs = {}
 
-        with open(filename, **file_kwargs) as f:
+        with open(filename, **file_kwargs) as f:  # pylint: disable=unspecified-encoding
             pytoml.dump(data, f, **dump_kwargs)
 
 
@@ -105,7 +119,10 @@ class JSONExporter(Exporter):
         dump_kwargs: Optional[Mapping] = None,
     ) -> None:
         if not file_kwargs:
-            file_kwargs = {"mode": "w"}
+            file_kwargs = {
+                "mode": "w",
+                "encoding": "utf-8",
+            }
 
         if not dump_kwargs:
             dump_kwargs = {
@@ -113,7 +130,7 @@ class JSONExporter(Exporter):
                 "indent": 4,
             }
 
-        with open(filename, **file_kwargs) as f:
+        with open(filename, **file_kwargs) as f:  # pylint: disable=unspecified-encoding
             json.dump(data, f, **dump_kwargs)
 
 
@@ -131,5 +148,5 @@ class PickleExporter(Exporter):
         if not dump_kwargs:
             dump_kwargs = {}
 
-        with open(filename, **file_kwargs) as f:
+        with open(filename, **file_kwargs) as f:  # pylint: disable=unspecified-encoding
             pickle.dump(data, f, **dump_kwargs)
