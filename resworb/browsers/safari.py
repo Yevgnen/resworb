@@ -2,6 +2,7 @@
 
 import os
 import plistlib
+import re
 import sqlite3
 import subprocess
 import tempfile
@@ -72,10 +73,13 @@ class SafariOpenedTabs(OpenedTabMixin):
         with open(temp, mode="r") as f:
             for line in f:
                 url, title = line.split("\t")
-                yield {
-                    "title": title.rstrip(),
-                    "url": url,
-                }
+
+                # Ignore start pages
+                if not re.match(r"favorites://", url):
+                    yield {
+                        "title": title.rstrip(),
+                        "url": url,
+                    }
 
 
 class SafariCloudTabs(CloudTabMixin):
