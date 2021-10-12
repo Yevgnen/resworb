@@ -104,7 +104,7 @@ class SafariCloudTabs(CloudTabMixin):
 
     def get_cloud_tabs(self) -> Iterable[Dict[str, Any]]:
         for device in self.get_devices():
-            yield {**device, "tabs": list(self.get_device_cloud_tabs(device["id"]))}
+            yield {**device, "tabs": self.get_device_cloud_tabs(device["id"])}
 
 
 class SafariReadings(ReadingMixin):

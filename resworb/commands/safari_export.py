@@ -7,6 +7,7 @@ import os
 
 from resworb.browsers.safari import Safari
 from resworb.exporter import JSONExporter, PickleExporter, TOMLExporter, YAMLExporter
+from resworb.formatter import WeixinFormatter
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -62,6 +63,29 @@ def parse_args():
     return args
 
 
+def format_records(records, formatters):
+    def _format(record):
+        for f in formatters:
+            record = f(record)
+
+        return record
+
+    results = {}
+    for key, value in records.items():
+        if key == "cloud_tabs":
+            results[key] = [
+                {
+                    k: list(map(_format, v)) if k == "tabs" else v
+                    for k, v in device_value.items()
+                }
+                for device_value in value
+            ]
+        else:
+            results[key] = list(map(_format, value))
+
+    return results
+
+
 def export(sources: str, target: str, library: str) -> None:
     export_factory = {
         ".yml": YAMLExporter,
@@ -78,6 +102,11 @@ def export(sources: str, target: str, library: str) -> None:
     exporter = exporter_class()  # type: ignore
 
     records = Safari(library=library).export(sources)
+
+    formatters = [
+        WeixinFormatter(),
+    ]
+    records = format_records(records, formatters)
 
     exporter.export_to_file(records, target)
 
