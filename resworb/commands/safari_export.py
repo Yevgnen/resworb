@@ -86,7 +86,16 @@ def format_records(records, formatters):
     return results
 
 
-def export(sources: str, target: str, library: str) -> None:
+def main():
+    args = parse_args()
+
+    records = Safari(library=args.library).export(args.sources)
+
+    formatters = [
+        WeixinFormatter(),
+    ]
+    records = format_records(records, formatters)
+
     export_factory = {
         ".yml": YAMLExporter,
         ".yaml": YAMLExporter,
@@ -95,20 +104,12 @@ def export(sources: str, target: str, library: str) -> None:
         ".pkl": PickleExporter,
         ".pickle": PickleExporter,
     }
-    file_type = os.path.splitext(target)[1]
+    file_type = os.path.splitext(args.target)[1]
     exporter_class = export_factory.get(file_type)
     if exporter_class is None:
         raise ValueError(f"Unsupported file type: {file_type}")
     exporter = exporter_class()  # type: ignore
-
-    records = Safari(library=library).export(sources)
-
-    formatters = [
-        WeixinFormatter(),
-    ]
-    records = format_records(records, formatters)
-
-    exporter.export_to_file(records, target)
+    exporter.export_to_file(records, args.target)
 
     logger.info("Export statistics:")
     for source, data in records.items():
@@ -116,8 +117,3 @@ def export(sources: str, target: str, library: str) -> None:
             logger.info("%s\t%d", source, sum(len(x["tabs"]) for x in data))
         else:
             logger.info("%s\t%d", source, len(data))
-
-
-def main():
-    args = parse_args()
-    export(args.source, args.target, args.library)
