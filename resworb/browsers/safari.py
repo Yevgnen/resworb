@@ -157,32 +157,29 @@ class SafariBookmarks(BookmarkMixin):
                         "url": node["URLString"],
                     }
 
-            raise ValueError(f"Unknow node type: {node.__class__}")
+            raise ValueError(f"Unknow node type: {node['WebBookmarkType']}")
 
         def _get_bookmarks_flatten(node, folders):
-            if isinstance(node, list):
-                for x in node:
-                    yield from _get_bookmarks_flatten(x, folders)
+            if node["WebBookmarkType"] == "WebBookmarkTypeList":
+                for x in node.get("Children", []):
+                    yield from _get_bookmarks_flatten(x, [*folders, node["Title"]])
 
-            if isinstance(node, dict):
-                if node["WebBookmarkType"] == "WebBookmarkTypeList":
-                    for x in node.get("Children", []):
-                        yield from _get_bookmarks_flatten(x, [*folders, node["Title"]])
+            elif node["WebBookmarkType"] == "WebBookmarkTypeLeaf":
+                children = node.get("Children", [])
+                for x in children:
+                    yield from _get_bookmarks_flatten(
+                        x,
+                        [*folders, node["Title"]],
+                    )
 
-                if node["WebBookmarkType"] == "WebBookmarkTypeLeaf":
-                    children = node.get("Children")
-                    if children is not None:
-                        for x in children:
-                            yield from _get_bookmarks_flatten(
-                                x,
-                                [*folders, node["Title"]],
-                            )
+                yield {
+                    "title": node["URIDictionary"]["title"],
+                    "url": node["URLString"],
+                    "folders": folders,
+                }
 
-                    yield {
-                        "title": node["URIDictionary"]["title"],
-                        "url": node["URLString"],
-                        "folders": folders,
-                    }
+            else:
+                raise ValueError(f"Unknow node type: {node['WebBookmarkType']}")
 
         bookmarks = self.bookmark_plist["Children"][1]["Children"]
         if flatten:
