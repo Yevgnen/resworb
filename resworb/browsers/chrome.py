@@ -5,7 +5,7 @@ import os
 import re
 import sqlite3
 import sys
-from typing import Dict, Iterable, Union
+from typing import Dict, Iterable
 
 from resworb.base import (
     BookmarkMixin,
@@ -34,7 +34,7 @@ class ChromeReadings(ReadingMixin):
 
 
 class ChromeBookmarks(BookmarkMixin):
-    def get_bookmarks(self, flatten: bool = True) -> Union[Iterable[URLItem], Dict]:
+    def get_bookmarks(self, flatten: bool = True) -> Iterable[URLItem]:
         def _get_bookmarks(node, folders):
             children = node.get("children")
             if children is not None:
