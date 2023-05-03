@@ -20,17 +20,17 @@ from resworb.exporter import ExportMixin
 
 class ChromeOpenedTabs(OpenedTabMixin):
     def get_opened_tabs(self) -> Iterable[URLItem]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class ChromeCloudTabs(CloudTabMixin):
     def get_cloud_tabs(self) -> Iterable[URLItem]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class ChromeReadings(ReadingMixin):
     def get_readings(self) -> Iterable[URLItem]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class ChromeBookmarks(BookmarkMixin):
@@ -39,7 +39,7 @@ class ChromeBookmarks(BookmarkMixin):
             children = node.get("children")
             if children is not None:
                 for child in children:
-                    yield from _get_bookmarks(child, folders + [node["name"]])
+                    yield from _get_bookmarks(child, [*folders, node["name"]])
             else:
                 yield {
                     "title": node["name"],
@@ -47,7 +47,7 @@ class ChromeBookmarks(BookmarkMixin):
                     "folders": folders,
                 }
 
-        with open(self.bookmark_file, mode="r", encoding="utf-8") as f:
+        with open(self.bookmark_file, encoding="utf-8") as f:
             data = json.load(f)
 
         roots = data.get("roots", {})
@@ -106,7 +106,7 @@ class Chrome(
     ChromeBookmarks,
     ChromeHistories,
 ):  # pylint: disable=too-many-ancestors
-    def __init__(self, library: str = get_default_library_path()):
+    def __init__(self, library: str = get_default_library_path()) -> None:
         super().__init__()
 
         self.library = library

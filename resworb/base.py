@@ -5,32 +5,32 @@ from typing import Dict, Iterable, Union
 URLItem = Dict[str, str]
 
 
-class OpenedTabMixin(object):
+class OpenedTabMixin:
     def get_opened_tabs(self) -> Iterable[URLItem]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
-class CloudTabMixin(object):
+class CloudTabMixin:
     cloud_tab_file: str
 
     def get_cloud_tabs(self) -> Iterable[URLItem]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
-class ReadingMixin(object):
+class ReadingMixin:
     def get_readings(self) -> Iterable[URLItem]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
-class BookmarkMixin(object):
+class BookmarkMixin:
     bookmark_file: str
 
     def get_bookmarks(self, flatten: bool = True) -> Union[Iterable[URLItem], Dict]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
-class HistoryMixin(object):
+class HistoryMixin:
     history_file: str
 
     def get_histories(self) -> Iterable[Dict]:
-        raise NotImplementedError()
+        raise NotImplementedError

@@ -11,7 +11,7 @@ import yaml
 from resworb.base import URLItem
 
 
-class ExportMixin(object):
+class ExportMixin:
     get_opened_tabs: Callable
     get_cloud_tabs: Callable
     get_readings: Callable
@@ -28,7 +28,9 @@ class ExportMixin(object):
                 yield x
 
     def export(
-        self, kinds: Union[str, Iterable[str]] = "all", drop_duplicates: bool = True
+        self,
+        kinds: Union[str, Iterable[str]] = "all",
+        drop_duplicates: bool = True,
     ) -> Dict[str, List]:
         def _wrapper(name, f):
             if drop_duplicates:
@@ -63,7 +65,7 @@ class ExportMixin(object):
         return {kind: list(_wrapper(kind, factory[kind])) for kind in kinds}
 
 
-class Exporter(object, metaclass=abc.ABCMeta):
+class Exporter(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def export_to_file(
         self,
@@ -72,7 +74,7 @@ class Exporter(object, metaclass=abc.ABCMeta):
         file_kwargs: Optional[Mapping] = None,
         dump_kwargs: Optional[Mapping] = None,
     ) -> None:
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class YAMLExporter(Exporter):

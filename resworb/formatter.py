@@ -8,7 +8,7 @@ import lxml.html
 from resworb.base import URLItem
 
 
-class Formatter(object, metaclass=abc.ABCMeta):
+class Formatter(metaclass=abc.ABCMeta):
     def __call__(self, item: URLItem) -> URLItem:
         if self.match(item):
             return self.format(item)
@@ -16,10 +16,10 @@ class Formatter(object, metaclass=abc.ABCMeta):
         return item
 
     def match(self, item: URLItem) -> bool:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def format(self, item: URLItem) -> URLItem:
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class WeixinFormatter(Formatter):

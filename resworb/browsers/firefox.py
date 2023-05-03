@@ -45,12 +45,12 @@ class FirefoxOpenedTabs(OpenedTabMixin):
 
 class FirefoxCloudTabs(CloudTabMixin):
     def get_cloud_tabs(self) -> Iterable[URLItem]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class FirefoxReadings(ReadingMixin):
     def get_readings(self) -> Iterable[URLItem]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class FirefoxBookmarks(BookmarkMixin):
@@ -129,7 +129,10 @@ def get_default_library_path() -> str:
 
     if re.match("darwin", platform):
         return os.path.join(
-            os.environ["HOME"], "Library", "Application Support", "Firefox", "Profiles"
+            os.environ["HOME"],
+            "Library",
+            "Application Support",
+            "Firefox",
         )
 
     raise RuntimeError(f"Unsupported platform: {platform}")
@@ -143,14 +146,17 @@ class Firefox(
     FirefoxBookmarks,
     FirefoxHistories,
 ):  # pylint: disable=too-many-ancestors
-    def __init__(self, library: str = get_default_library_path()):
+    def __init__(self, library: str = get_default_library_path()) -> None:
         super().__init__()
 
         self.library = library
 
         session_files = glob.glob(
             os.path.join(
-                self.library, "*.default*", "sessionstore-backups", "recovery.jsonlz4"
+                self.library,
+                "*.default*",
+                "sessionstore-backups",
+                "recovery.jsonlz4",
             ),
             recursive=True,
         )
@@ -159,7 +165,8 @@ class Firefox(
         self.session_file = session_files[0]
 
         history_files = glob.glob(
-            os.path.join(self.library, "*.default*", "places.sqlite"), recursive=True
+            os.path.join(self.library, "*.default*", "places.sqlite"),
+            recursive=True,
         )
         if not history_files:
             raise RuntimeError(f"History file not found in {self.library}")

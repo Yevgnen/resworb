@@ -70,7 +70,7 @@ class SafariOpenedTabs(OpenedTabMixin):
         """
         subprocess.run(["osascript", "-e", script], check=True)
 
-        with open(temp, mode="r", encoding="utf-8") as f:
+        with open(temp, encoding="utf-8") as f:
             for line in f:
                 url, title = line.split("\t")
 
@@ -111,7 +111,6 @@ class SafariReadings(ReadingMixin):
     bookmark_plist: Mapping
 
     def get_readings(self) -> Iterable[URLItem]:
-
         bookmarks = None
         for child in self.bookmark_plist["Children"]:
             if child.get("Title", None) == "com.apple.ReadingList":
@@ -168,14 +167,15 @@ class SafariBookmarks(BookmarkMixin):
             if isinstance(node, dict):
                 if node["WebBookmarkType"] == "WebBookmarkTypeList":
                     for x in node.get("Children", []):
-                        yield from _get_bookmarks_flatten(x, folders + [node["Title"]])
+                        yield from _get_bookmarks_flatten(x, [*folders, node["Title"]])
 
                 if node["WebBookmarkType"] == "WebBookmarkTypeLeaf":
                     children = node.get("Children")
                     if children is not None:
                         for x in children:
                             yield from _get_bookmarks_flatten(
-                                x, folders + [node["Title"]]
+                                x,
+                                [*folders, node["Title"]],
                             )
 
                     yield {
@@ -220,7 +220,7 @@ class Safari(
     SafariBookmarks,
     SafariHistories,
 ):  # pylint: disable=too-many-ancestors
-    def __init__(self, library: str = DEFAULT_LIBRARY_PATH):
+    def __init__(self, library: str = DEFAULT_LIBRARY_PATH) -> None:
         super().__init__()
 
         self.library = library
