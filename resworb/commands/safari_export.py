@@ -4,7 +4,7 @@
 import argparse
 import logging
 import os
-from typing import Optional
+from typing import Optional, Type
 
 from resworb.browsers.safari import Safari
 from resworb.exporter import JSONExporter, PickleExporter, TOMLExporter, YAMLExporter
@@ -12,6 +12,19 @@ from resworb.formatter import WeixinFormatter
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+DEFAULT_FORMATTERS = [
+    WeixinFormatter(),
+]
+
+EXPORT_FACTORY = {
+    ".yml": YAMLExporter,
+    ".yaml": YAMLExporter,
+    ".toml": TOMLExporter,
+    ".json": JSONExporter,
+    ".pkl": PickleExporter,
+    ".pickle": PickleExporter,
+}
 
 
 def library_path() -> Optional[str]:
@@ -98,30 +111,23 @@ def format_records(records, formatters):
     return results
 
 
+def get_exporter(filename) -> Type:
+    file_type = os.path.splitext(filename)[1]
+    exporter_class = EXPORT_FACTORY.get(file_type)
+    if exporter_class is None:
+        msg = f"Unsupported file type: {file_type}"
+        raise ValueError(msg)
+
+    return exporter_class()
+
+
 def main():
     args = parse_args()
 
     records = Safari(library=args.library).export(args.sources)
+    records = format_records(records, DEFAULT_FORMATTERS)
 
-    formatters = [
-        WeixinFormatter(),
-    ]
-    records = format_records(records, formatters)
-
-    export_factory = {
-        ".yml": YAMLExporter,
-        ".yaml": YAMLExporter,
-        ".toml": TOMLExporter,
-        ".json": JSONExporter,
-        ".pkl": PickleExporter,
-        ".pickle": PickleExporter,
-    }
-    file_type = os.path.splitext(args.target)[1]
-    exporter_class = export_factory.get(file_type)
-    if exporter_class is None:
-        msg = f"Unsupported file type: {file_type}"
-        raise ValueError(msg)
-    exporter = exporter_class()  # type: ignore
+    exporter = get_exporter(args.target)
     exporter.export_to_file(records, args.target)
 
     logger.info("Export statistics:")
