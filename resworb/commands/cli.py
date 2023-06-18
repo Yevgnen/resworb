@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import argparse
 import logging
@@ -37,7 +36,15 @@ def library_path() -> Optional[str]:
     return path
 
 
-def add_arguments(parser):
+def add_export_arguments(parser):
+    parser.add_argument(
+        "-b",
+        "--browser",
+        type=str,
+        required=True,
+        help="Seleted browser.",
+    )
+
     sources = [
         "opened_tabs",
         "cloud_tabs",
@@ -45,7 +52,6 @@ def add_arguments(parser):
         "bookmarks",
         "histories",
     ]
-
     parser.add_argument(
         "-s",
         "--source",
@@ -69,7 +75,7 @@ def add_arguments(parser):
         "--library",
         type=str,
         default=library,
-        help=f"Safari library location (default: {library!r})",
+        help=f"Library location (default: {library!r})",
     )
 
     return parser
@@ -78,7 +84,10 @@ def add_arguments(parser):
 def parse_args():
     # pylint: disable=redefined-outer-name
     parser = argparse.ArgumentParser()
-    parser = add_arguments(parser)
+
+    subparsers = parser.add_subparsers(required=True)
+    export_parser = subparsers.add_parser("export", help="Export browser data")
+    add_export_arguments(export_parser)
 
     args = parser.parse_args()
 
@@ -111,6 +120,14 @@ def format_records(records, formatters):
     return results
 
 
+def get_browser_class(name) -> Type:
+    if name == "safari":
+        return Safari
+
+    msg = "Unsupported browser: {name}"
+    raise ValueError(msg)
+
+
 def get_exporter(filename) -> Type:
     file_type = os.path.splitext(filename)[1]
     exporter_class = EXPORT_FACTORY.get(file_type)
@@ -124,7 +141,10 @@ def get_exporter(filename) -> Type:
 def main():
     args = parse_args()
 
-    records = Safari(library=args.library).export(args.sources)
+    browser_class = get_browser_class(args.browser)
+    browser = browser_class(library=args.library)
+
+    records = browser.export(args.source)
     records = format_records(records, DEFAULT_FORMATTERS)
 
     exporter = get_exporter(args.target)
