@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import glob
 import json
 import os
@@ -135,7 +133,8 @@ def get_default_library_path() -> str:
             "Firefox",
         )
 
-    raise RuntimeError(f"Unsupported platform: {platform}")
+    msg = f"Unsupported platform: {platform}"
+    raise RuntimeError(msg)
 
 
 class Firefox(
@@ -161,7 +160,8 @@ class Firefox(
             recursive=True,
         )
         if not session_files:
-            raise RuntimeError(f"Session file not found in {self.library}")
+            msg = f"Session file not found in {self.library}"
+            raise RuntimeError(msg)
         self.session_file = session_files[0]
 
         history_files = glob.glob(
@@ -169,5 +169,6 @@ class Firefox(
             recursive=True,
         )
         if not history_files:
-            raise RuntimeError(f"History file not found in {self.library}")
+            msg = f"History file not found in {self.library}"
+            raise RuntimeError(msg)
         self.history_file = history_files[0]

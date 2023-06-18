@@ -119,7 +119,8 @@ def main():
     file_type = os.path.splitext(args.target)[1]
     exporter_class = export_factory.get(file_type)
     if exporter_class is None:
-        raise ValueError(f"Unsupported file type: {file_type}")
+        msg = f"Unsupported file type: {file_type}"
+        raise ValueError(msg)
     exporter = exporter_class()  # type: ignore
     exporter.export_to_file(records, args.target)
 

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import json
 import os
 import re
@@ -95,7 +93,8 @@ def get_default_library_path() -> str:
             "Default",
         )
 
-    raise RuntimeError(f"Unsupported platform: {platform}")
+    msg = f"Unsupported platform: {platform}"
+    raise RuntimeError(msg)
 
 
 class Chrome(

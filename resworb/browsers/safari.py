@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import os
 import plistlib
 import re
@@ -157,7 +155,8 @@ class SafariBookmarks(BookmarkMixin):
                         "url": node["URLString"],
                     }
 
-            raise ValueError(f"Unknow node type: {node['WebBookmarkType']}")
+            msg = f"Unknow node type: {node['WebBookmarkType']}"
+            raise ValueError(msg)
 
         def _get_bookmarks_flatten(node, folders):
             if node["WebBookmarkType"] == "WebBookmarkTypeList":
@@ -179,7 +178,8 @@ class SafariBookmarks(BookmarkMixin):
                 }
 
             else:
-                raise ValueError(f"Unknow node type: {node['WebBookmarkType']}")
+                msg = f"Unknow node type: {node['WebBookmarkType']}"
+                raise ValueError(msg)
 
         bookmarks = self.bookmark_plist["Children"][1]["Children"]
         if flatten:

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from typing import Dict, Iterable, Union
 
 URLItem = Dict[str, str]
