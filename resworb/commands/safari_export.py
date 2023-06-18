@@ -4,6 +4,7 @@
 import argparse
 import logging
 import os
+from typing import Optional
 
 from resworb.browsers.safari import Safari
 from resworb.exporter import JSONExporter, PickleExporter, TOMLExporter, YAMLExporter
@@ -11,6 +12,16 @@ from resworb.formatter import WeixinFormatter
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+def library_path() -> Optional[str]:
+    home = os.getenv("HOME")
+    if not home:
+        return None
+
+    path = os.path.join(home, "Library", "Safari")
+
+    return path
 
 
 def add_arguments(parser):
@@ -38,7 +49,8 @@ def add_arguments(parser):
         required=True,
         help="Output file name.",
     )
-    library = os.path.join(os.getenv("HOME"), "Library", "Safari")
+
+    library = library_path()
     parser.add_argument(
         "-l",
         "--library",
