@@ -1,4 +1,4 @@
-from typing import Dict, Iterable, Union
+from typing import Dict, Iterable
 
 URLItem = Dict[str, str]
 
@@ -23,7 +23,7 @@ class ReadingMixin:
 class BookmarkMixin:
     bookmark_file: str
 
-    def get_bookmarks(self, flatten: bool = True) -> Union[Iterable[URLItem], Dict]:
+    def get_bookmarks(self, flatten: bool = True) -> Iterable[URLItem]:
         raise NotImplementedError
 
 

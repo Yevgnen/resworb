@@ -4,7 +4,7 @@ import os
 import re
 import sqlite3
 import sys
-from typing import Dict, Iterable, Union
+from typing import Dict, Iterable
 
 from resworb.base import (
     BookmarkMixin,
@@ -65,7 +65,7 @@ class FirefoxBookmarks(BookmarkMixin):
 
             return [dict(zip(columns, r)) for r in conn.cursor().execute(sql)]
 
-    def get_bookmarks(self, flatten: bool = True) -> Union[Iterable[URLItem], Dict]:
+    def get_bookmarks(self, flatten: bool = True) -> Iterable[URLItem]:
         bookmark_folders = self._get_bookmarks_folders()
         bookmark_folders = {x["id"]: x for x in bookmark_folders}
 
